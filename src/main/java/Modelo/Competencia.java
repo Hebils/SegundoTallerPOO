@@ -4,6 +4,7 @@
  */
 package Modelo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class Competencia {
 
     public Competencia(String nombreEvento, List<Equipo> equipos) {
         this.nombreEvento = nombreEvento;
-        this.equipos = equipos;
+        this.equipos = new ArrayList<>();
     }
 
     public String getNombreEvento() {
@@ -36,5 +37,27 @@ public class Competencia {
         this.equipos = equipos;
     }
     
+    public void agregarEquipo(Equipo e) {
+        this.equipos.add(e);
+    }
+    
+    public String generarReporte() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("==================================================\n");
+        sb.append("REPORTE DE COMPETENCIA: ").append(nombreEvento).append("\n");
+        sb.append("==================================================\n");
+        sb.append("Total de equipos inscritos: ").append(equipos.size()).append("\n\n");
+
+        for (Equipo equipo : equipos) {
+            sb.append(equipo.obtenerDatosEquipo()).append("\n");
+        }
+
+        return sb.toString();
+    }
+    
+    @Override
+    public String toString() {
+        return "Competencia [Evento: " + nombreEvento + ", Equipos: " + equipos.size() + "]";
+    }
     
 }
