@@ -17,7 +17,7 @@ public class Equipo {
     private String pais;
     private List<Competidor> competidores;
 
-    public Equipo(String nombre, String pais, List<Competidor> competidores) {
+    public Equipo(String nombre, String pais) {
         this.nombre = nombre;
         this.pais = pais;
         this.competidores = new ArrayList<>();

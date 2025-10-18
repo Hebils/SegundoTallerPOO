@@ -16,7 +16,7 @@ public class Competencia {
     private String nombreEvento;
     private List<Equipo> equipos;
 
-    public Competencia(String nombreEvento, List<Equipo> equipos) {
+    public Competencia(String nombreEvento) {
         this.nombreEvento = nombreEvento;
         this.equipos = new ArrayList<>();
     }

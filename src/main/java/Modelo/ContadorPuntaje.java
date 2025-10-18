@@ -31,7 +31,7 @@ public class ContadorPuntaje {
             c.setPuntos(c.getPuntos() + puntosObtenidos);
 
             //Actualizar el ranking con la sobrecarga
-            int nuevoRanking = c.ranking(puntosObtenidos);
+            int nuevoRanking = c.actualizarRanking(puntosObtenidos, true);
 
             sb.append(String.format("Competidor: %s | Puntos obtenidos: %d | Total Puntos: %d | Nuevo Ranking: %d\n",
                     c.getNombre(), puntosObtenidos, c.getPuntos(), nuevoRanking));
