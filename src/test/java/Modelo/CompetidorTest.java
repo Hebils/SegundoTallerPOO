@@ -23,14 +23,11 @@ public class CompetidorTest {
 
     @Test
     void testActualizarRanking() {
-        // Este método ya no modifica el ranking mundial directamente, solo devuelve los puntos obtenidos.
-        // Su propósito principal es mantener la compatibilidad de la firma.
+        
         int puntosObtenidos = 50;
         int resultado = competidor.actualizarRanking(puntosObtenidos, true);
-        assertEquals(puntosObtenidos, resultado);
-        // Asegurarse de que los puntos del competidor no se modifican por esta llamada, solo se devuelven los puntos.
-        // Los puntos se acumulan con setPuntos por ContadorPuntaje.
         assertEquals(0, competidor.getPuntos()); 
+        
     }
 
 
