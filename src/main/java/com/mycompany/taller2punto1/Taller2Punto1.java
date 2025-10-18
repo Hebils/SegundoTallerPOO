@@ -16,6 +16,8 @@ import Modelo.Equipo;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class Taller2Punto1 {
@@ -82,11 +84,11 @@ public class Taller2Punto1 {
             String pais = JOptionPane.showInputDialog("País que representa:");
             if (pais == null || pais.trim().isEmpty()) return;
 
-            int rankingMundial = Integer.parseInt(JOptionPane.showInputDialog("Ranking Mundial (posición):"));
+
             double estatura = Double.parseDouble(JOptionPane.showInputDialog("Estatura (en metros, ej: 1.75):"));
             double peso = Double.parseDouble(JOptionPane.showInputDialog("Peso (en kg, ej: 65.0):"));
 
-            Competidor nuevoCompetidor = new Competidor(nombre, edad, pais, rankingMundial, estatura, peso);
+            Competidor nuevoCompetidor = new Competidor(nombre, edad, pais, estatura, peso);
 
             // 2. Selección de equipo
             Object[] opcionesEquipo = equipos.stream().map(Equipo::getNombre).toArray();
@@ -128,9 +130,16 @@ public class Taller2Punto1 {
             return;
         }
 
-        // Simular orden de llegada (simplemente usamos la lista actual)
-        // En una aplicación real, se pediría el orden de llegada.
-        String resumenPuntos = contador.asignarPuntos(todosCompetidores);
+        // 1. Obtener el orden de llegada de los competidores por parte del usuario
+        List<Competidor> competidoresOrdenados = solicitarOrdenLlegada(todosCompetidores);
+
+        if (competidoresOrdenados == null) {
+            JOptionPane.showMessageDialog(null, "Simulación cancelada.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // 2. Asignar puntos y actualizar rankings basado en el orden ingresado
+        String resumenPuntos = contador.asignarPuntos(competidoresOrdenados);
 
         JTextAreaWithScroll.show(resumenPuntos, "Simulación de Resultados");
     }
@@ -141,8 +150,30 @@ public class Taller2Punto1 {
             return;
         }
 
-        String reporte = mundialCiclismo.generarReporte();
-        JTextAreaWithScroll.show(reporte, "Reporte de Competencia: " + mundialCiclismo.getNombreEvento());
+        // Asegurarse de que los competidores estén ordenados por puntos antes de generar el reporte
+        List<Competidor> todosCompetidoresOrdenados = new ArrayList<>(todosCompetidores);
+        todosCompetidoresOrdenados.sort(Comparator.comparingInt(Competidor::getPuntos).reversed());
+
+        StringBuilder reporte = new StringBuilder();
+        reporte.append("==================================================\n");
+        reporte.append("REPORTE DE COMPETENCIA: ").append(mundialCiclismo.getNombreEvento()).append("\n");
+        reporte.append("==================================================\n");
+        reporte.append("\n--- Ranking General de Competidores (por puntos) ---\n");
+        for (int i = 0; i < todosCompetidoresOrdenados.size(); i++) {
+            Competidor c = todosCompetidoresOrdenados.get(i);
+            reporte.append(String.format("%d. %s (Equipo: %s, Puntos: %d)\n",
+                    (i + 1),
+                    c.getNombre(),
+                    mundialCiclismo.getEquipos().stream()
+                            .filter(equipo -> equipo.getCompetidores().contains(c))
+                            .findFirst().map(Equipo::getNombre).orElse("N/A"),
+                    c.getPuntos()));
+        }
+        reporte.append("\n");
+
+        reporte.append(mundialCiclismo.generarReporte()); // Reporte original de equipos
+
+        JTextAreaWithScroll.show(reporte.toString(), "Reporte de Competencia: " + mundialCiclismo.getNombreEvento());
     }
     
     private static void mostrarPuntajeTotal() {
@@ -161,12 +192,62 @@ public class Taller2Punto1 {
             return;
         }
 
-        Competidor primerCompetidor = todosCompetidores.get(0);
-        String datosC = primerCompetidor.toString();
+        // Mostrar el toString() de todos los competidores
+        StringBuilder sb = new StringBuilder();
+        sb.append("Datos de Competidores (usando toString()):\n\n");
+        for (Competidor c : todosCompetidores) {
+            sb.append(c.toString()).append("\n--------------------\n");
+        }
 
-        JOptionPane.showMessageDialog(null, "Uso del método sobreescrito toString() para el primer competidor registrado:\n\n" + datosC, "Método toString()", JOptionPane.INFORMATION_MESSAGE);
+        JTextAreaWithScroll.show(sb.toString(), "Método toString()");
     }
     
+    private static List<Competidor> solicitarOrdenLlegada(List<Competidor> competidoresDisponibles) {
+        if (competidoresDisponibles.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No hay competidores para simular.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        List<Competidor> competidoresOrdenados = new ArrayList<>();
+        List<Competidor> restantes = new ArrayList<>(competidoresDisponibles);
+
+        for (int i = 0; i < competidoresDisponibles.size(); i++) {
+            String[] opciones = restantes.stream()
+                    .map(c -> c.getNombre() + " (Puntos: " + c.getPuntos() + ")")
+                    .toArray(String[]::new);
+
+            String seleccion = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Seleccione el competidor en la posición " + (i + 1) + ":\n(Competidores restantes: " + restantes.size() + ")",
+                    "Definir Orden de Llegada",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    opciones[0]);
+
+            if (seleccion == null) {
+                return null; // Usuario canceló
+            }
+
+            // Extraer el nombre del competidor de la selección
+            String nombreCompetidorSeleccionado = seleccion.substring(0, seleccion.indexOf(" ("));
+
+            Competidor competidorElegido = restantes.stream()
+                    .filter(c -> c.getNombre().equals(nombreCompetidorSeleccionado))
+                    .findFirst()
+                    .orElse(null);
+
+            if (competidorElegido != null) {
+                competidoresOrdenados.add(competidorElegido);
+                restantes.remove(competidorElegido);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al seleccionar competidor. Intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                i--; // Repetir la iteración actual
+            }
+        }
+        return competidoresOrdenados;
+    }
+
     public static void main(String[] args) {
         int opcion = 0;
         boolean salir = false;
@@ -178,7 +259,7 @@ public class Taller2Punto1 {
                               "2. Registrar Nuevo Equipo\n" +
                               "3. Registrar Competidor y Asignar a Equipo\n" +
                               "----------------------------------------------------\n" +
-                              "4. Simular Resultados (Asignar Puntos y Actualizar Ranking)\n" +
+                              "4. Simular Resultados (Ingresar Orden de Llegada, Asignar Puntos y Actualizar Ranking)\n" +
                               "5. Generar Reporte Completo de la Competencia\n" +
                               "6. Mostrar Puntaje Total por Equipo\n" +
                               "7. Mostrar uso de toString() (Sobreescritura)\n" +

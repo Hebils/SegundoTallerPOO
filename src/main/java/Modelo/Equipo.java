@@ -59,7 +59,7 @@ public class Equipo {
         sb.append("Competidores (").append(competidores.size()).append("):\n");
 
         for (Competidor competidor : competidores) {
-            sb.append("  - ").append(competidor.getNombre()).append(" (Ranking: ").append(competidor.getRankingMundial()).append(")\n");
+            sb.append("  - ").append(competidor.getNombre()).append("").append("\n");
         }
 
         return sb.toString();
