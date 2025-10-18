@@ -14,5 +14,27 @@ public class Competencia {
     
     private String nombreEvento;
     private List<Equipo> equipos;
+
+    public Competencia(String nombreEvento, List<Equipo> equipos) {
+        this.nombreEvento = nombreEvento;
+        this.equipos = equipos;
+    }
+
+    public String getNombreEvento() {
+        return nombreEvento;
+    }
+
+    public void setNombreEvento(String nombreEvento) {
+        this.nombreEvento = nombreEvento;
+    }
+
+    public List<Equipo> getEquipos() {
+        return equipos;
+    }
+
+    public void setEquipos(List<Equipo> equipos) {
+        this.equipos = equipos;
+    }
+    
     
 }
