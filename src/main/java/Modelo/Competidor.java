@@ -18,14 +18,14 @@ public class Competidor {
     private double peso;
     private int puntos;
     
-    public Competidor(String nombre, int edad, String pais, int rankingMundial, double estatura, double peso, int puntos) {
+    public Competidor(String nombre, int edad, String pais, int rankingMundial, double estatura, double peso) {
         this.nombre = nombre;
         this.edad = edad;
         this.pais = pais;
         this.rankingMundial = rankingMundial;
         this.estatura = estatura;
         this.peso = peso;
-        this.puntos = puntos;
+        this.puntos = 0;
     }
 
     public String getNombre() {
@@ -88,12 +88,20 @@ public class Competidor {
         this.rankingMundial = nuevoRanking;
     }
     
-    public int ranking(int puntosObtenidos) {
-
-        int ajusteRanking = puntosObtenidos / 10;
+    public int actualizarRanking(int puntosObtenidos, boolean conBonificacion) {
+        // Lógica de ejemplo para la estructura anidada y sobrecarga
+        int ajusteRanking = puntosObtenidos / 10; // Cada 10 puntos, mejora 1 posición
         
+        if (conBonificacion) {
+            if (puntosObtenidos > 100) {
+                ajusteRanking += 5; // Bonificación de 5 posiciones por alto puntaje
+            }
+        }
+        
+        // El ranking mundial es un número, si el competidor mejora, el número baja.
         int nuevoRanking = this.rankingMundial - ajusteRanking;
         
+        // Asegurarse de que el ranking no sea menor a 1
         this.rankingMundial = Math.max(1, nuevoRanking);
         
         return this.rankingMundial;
