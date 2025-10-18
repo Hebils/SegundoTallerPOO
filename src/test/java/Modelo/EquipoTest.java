@@ -25,9 +25,9 @@ public class EquipoTest {
 
     @BeforeEach
     void setUp() {
-        equipo = new Equipo("Team A", "Country X");
-        competidor1 = new Competidor("John Doe", 25, "Country X", 1.80, 75.0);
-        competidor2 = new Competidor("Jane Smith", 22, "Country X", 1.70, 60.0);
+        equipo = new Equipo("equipo A", "pais X");
+        competidor1 = new Competidor("Juan", 25, "pais X", 1.80, 75.0);
+        competidor2 = new Competidor("Pedro", 22, "pais X", 1.70, 60.0);
     }
 
     @Test
